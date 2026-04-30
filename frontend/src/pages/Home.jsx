@@ -78,11 +78,13 @@ const Home = () => {
       {/* NAVBAR */}
       <header style={{ position: "sticky", top: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 40px", background: "rgba(2,6,23,0.88)", backdropFilter: "blur(16px)", borderBottom: "1px solid rgba(148,163,184,0.1)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <polygon points="11,2 20,7 20,15 11,20 2,15 2,7" stroke="#22d3ee" strokeWidth="1.5" fill="none"/>
-            <polygon points="11,6 16,9 16,13 11,16 6,13 6,9" fill="#22d3ee" opacity="0.3"/>
-          </svg>
-          <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: "0.04em" }}>codeflex<span style={{ color: "#22d3ee" }}>.ai</span></span>
+          <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
+  <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="#FF6B35" strokeWidth="1.5" fill="none"/>
+  <path d="M10 6L14 8.5V11.5L10 14L6 11.5V8.5L10 6Z" fill="#FF6B35" opacity="0.4"/>
+</svg>
+<span style={{ fontWeight: 500, fontSize: 18, letterSpacing: "0.04em" }}>
+  fit india<span style={{ color: "#FF9A3C" }}>.</span><span style={{ color: "#FF6B35" }}>ai</span>
+</span>
         </div>
         <nav style={{ display: "flex", alignItems: "center", gap: 28, fontSize: 14 }}>
           {["Home","Generate","Profile"].map(item => (
