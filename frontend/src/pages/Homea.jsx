@@ -239,10 +239,9 @@ const Home = () => {
 
       {/* ── GLOBAL STYLES ── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Syne:wght@600;700;800;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { background: #F7F9F2; margin: 0; padding: 0; }
-        #root { margin: 0; padding: 0; }
+        body { background: #F7F9F2; }
 
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(24px); }
@@ -396,15 +395,12 @@ const Home = () => {
       </header>
 
       {/* ════════════════════════════════
-          2. HERO — full bleed image (flush with navbar)
+          2. HERO — full bleed image
       ════════════════════════════════ */}
       <section style={{
         position: "relative",
         width: "100%", height: "520px",
         overflow: "hidden",
-        marginTop: 0,
-        display: "block",
-        lineHeight: 0,
       }}>
         {/* Background image */}
         <img
@@ -432,7 +428,7 @@ const Home = () => {
           position: "absolute", top: 0, left: 0, bottom: 0,
           width: "52%",
           display: "flex", flexDirection: "column", justifyContent: "center",
-          padding: "80px 60px 0 60px",
+          padding: "0 60px",
         }}>
           <h1 style={{
             fontFamily: "'Syne', sans-serif",
@@ -598,261 +594,6 @@ const Home = () => {
               fontSize: 22, color: "rgba(141,198,63,0.5)",
             }}>→</div>
           ))}
-        </div>
-      </section>
-
-      {/* ════════════════════════════════
-          3b. REAL-TIME BODY ANALYTICS
-          (matches screenshot 2 — light pinkish-cream bg,
-           text left, image right with BPM badge)
-      ════════════════════════════════ */}
-      <section style={{
-        padding: "88px 60px",
-        background: "linear-gradient(135deg, #F5F0EE 0%, #EDE8E4 50%, #F0EBE8 100%)",
-        position: "relative", overflow: "hidden",
-      }}>
-        {/* Warm blob top-right */}
-        <div style={{
-          position: "absolute", top: "-20%", right: "-8%",
-          width: "55%", height: "140%",
-          background: "radial-gradient(ellipse at 65% 45%, rgba(210,125,105,0.18) 0%, rgba(190,88,75,0.09) 45%, transparent 70%)",
-          borderRadius: "50% 50% 50% 50%",
-          pointerEvents: "none",
-        }} />
-
-        <div style={{
-          display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: 64, alignItems: "center",
-          maxWidth: 1200, margin: "0 auto",
-          position: "relative", zIndex: 2,
-        }}>
-          {/* Left — text */}
-          <div>
-            <p style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 11, fontWeight: 700,
-              color: "#8B3A2A", letterSpacing: "0.18em",
-              marginBottom: 18, textTransform: "uppercase",
-            }}>AI-POWERED TRACKING</p>
-            <h2 style={{
-              fontFamily: "'Playfair Display', 'Georgia', serif",
-              fontSize: "clamp(32px, 4vw, 52px)",
-              fontWeight: 900, lineHeight: 1.1,
-              color: "#1A0808", marginBottom: 20,
-              letterSpacing: "-0.015em",
-            }}>
-              Real-Time<br />Body Analytics
-            </h2>
-            <p style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 15, color: "#6B5050",
-              lineHeight: 1.78, maxWidth: 400, marginBottom: 36,
-            }}>
-              Our AI track your form, monitors vital metrics and provides feedback during every workout — just like being a personal trainer.
-            </p>
-
-            {/* 4 metric chips */}
-            <div style={{
-              display: "grid", gridTemplateColumns: "1fr 1fr",
-              gap: 12, maxWidth: 380,
-            }}>
-              {[
-                { val: "Real-time", sub: "Pose Detection" },
-                { val: "Auto",      sub: "Rep Counting" },
-                { val: "0-100",     sub: "Form Score" },
-                { val: "Live",      sub: "Calories" },
-              ].map(({ val, sub }) => (
-                <div key={sub} style={{
-                  padding: "14px 16px",
-                  background: "rgba(255,255,255,0.7)",
-                  border: "1px solid rgba(180,160,155,0.35)",
-                  borderRadius: 12,
-                  backdropFilter: "blur(8px)",
-                  cursor: "default",
-                  transition: "all 0.22s ease",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.95)"; e.currentTarget.style.borderColor = "rgba(139,58,42,0.3)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.7)"; e.currentTarget.style.borderColor = "rgba(180,160,155,0.35)"; }}
-                >
-                  <div style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 15, fontWeight: 800,
-                    color: "#8B3A2A", marginBottom: 3,
-                  }}>{val}</div>
-                  <div style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 12, color: "#9A8888",
-                  }}>{sub}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right — image with badges */}
-          <div style={{ position: "relative" }}>
-            <div style={{
-              borderRadius: 18, overflow: "hidden",
-              border: "1px solid rgba(139,58,42,0.1)",
-              boxShadow: "0 24px 64px rgba(100,40,30,0.18)",
-            }}>
-              <img
-                src="/data-stats-around-person-doing-physical-activity.jpg"
-                alt="Body Analytics"
-                style={{
-                  width: "100%", height: 360,
-                  objectFit: "cover", display: "block",
-                }}
-              />
-            </div>
-
-            {/* BPM badge top-right */}
-            <div style={{
-              position: "absolute", top: 14, right: 14,
-              background: "rgba(15,8,8,0.92)",
-              borderRadius: 10, padding: "10px 16px",
-              border: "1px solid rgba(139,58,42,0.3)",
-              backdropFilter: "blur(12px)",
-              textAlign: "center",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
-            }}>
-              <div style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: 28, fontWeight: 900, color: "#fff", lineHeight: 1,
-              }}>129</div>
-              <div style={{ fontSize: 9, color: "#888", letterSpacing: "0.1em", marginTop: 2 }}>BPM</div>
-            </div>
-
-            {/* "Fit India" label bottom */}
-            <div style={{
-              position: "absolute", bottom: 14, left: "50%",
-              transform: "translateX(-50%)",
-              background: "rgba(139,58,42,0.9)",
-              borderRadius: 8, padding: "6px 18px",
-              backdropFilter: "blur(8px)",
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 11, fontWeight: 700, color: "#fff",
-              letterSpacing: "0.1em", whiteSpace: "nowrap",
-              boxShadow: "0 4px 16px rgba(139,58,42,0.3)",
-            }}>Fit India</div>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════
-          3c. EVERY REP. PERFECTLY TRACKED.
-          (matches screenshot 3 — image left, text right)
-      ════════════════════════════════ */}
-      <section style={{
-        padding: "88px 60px",
-        background: "linear-gradient(135deg, #EDE8E4 0%, #F0EBE8 60%, #E8E0DC 100%)",
-        position: "relative", overflow: "hidden",
-      }}>
-        {/* Warm blob bottom-left */}
-        <div style={{
-          position: "absolute", bottom: "-20%", left: "-8%",
-          width: "50%", height: "130%",
-          background: "radial-gradient(ellipse at 30% 65%, rgba(200,105,85,0.15) 0%, transparent 65%)",
-          borderRadius: "50%",
-          pointerEvents: "none",
-        }} />
-
-        <div style={{
-          display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: 64, alignItems: "center",
-          maxWidth: 1200, margin: "0 auto",
-          position: "relative", zIndex: 2,
-        }}>
-          {/* Left — image with overlay bar */}
-          <div style={{ position: "relative" }}>
-            <div style={{
-              borderRadius: 18, overflow: "hidden",
-              border: "1px solid rgba(139,58,42,0.1)",
-              boxShadow: "0 24px 64px rgba(100,40,30,0.18)",
-            }}>
-              <img
-                src="/full-shot-man-doing-sport-with-stats.jpg"
-                alt="Intelligent Coaching"
-                style={{
-                  width: "100%", height: 360,
-                  objectFit: "cover", display: "block",
-                }}
-              />
-            </div>
-
-            {/* Bottom caption bar */}
-            <div style={{
-              position: "absolute", bottom: 14, left: 14, right: 14,
-              background: "rgba(10,5,5,0.9)",
-              borderRadius: 10, padding: "11px 16px",
-              backdropFilter: "blur(12px)",
-              border: "1px solid rgba(139,58,42,0.25)",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
-            }}>
-              <div style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 11, fontWeight: 700,
-                color: "#a8e8a8", marginBottom: 4,
-                display: "flex", alignItems: "center", gap: 6,
-              }}>
-                <span style={{
-                  width: 7, height: 7, borderRadius: "50%",
-                  background: "#4ADE80", display: "inline-block",
-                  boxShadow: "0 0 6px #4ADE80",
-                }} />
-                The Back — Best Calories Loss
-              </div>
-              <div style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 11, color: "#666",
-              }}>X91 body 8dy · 31T mumble woun · Casct cato: 175 bpm</div>
-            </div>
-          </div>
-
-          {/* Right — text */}
-          <div>
-            <p style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 11, fontWeight: 700,
-              color: "#8B3A2A", letterSpacing: "0.18em",
-              marginBottom: 18, textTransform: "uppercase",
-            }}>INTELLIGENT COACHING</p>
-            <h2 style={{
-              fontFamily: "'Playfair Display', 'Georgia', serif",
-              fontSize: "clamp(32px, 4vw, 56px)",
-              fontWeight: 900, lineHeight: 1.08,
-              marginBottom: 22, letterSpacing: "-0.015em",
-            }}>
-              <span style={{ color: "#1A0808" }}>Every Rep.<br /></span>
-              <span style={{
-                background: "linear-gradient(135deg, #6B0A1A 0%, #A52535 60%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}>Perfectly Tracked.</span>
-            </h2>
-            <p style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 15, color: "#6B5050",
-              lineHeight: 1.78, maxWidth: 400, marginBottom: 36,
-            }}>
-              Advanced computer vision analyse your movement patterns and gives science-backed feedback to maximize results and prevent injury.
-            </p>
-            <button
-              onClick={() => navigate(isSignedIn ? "/workout" : "/sign-up")}
-              style={{
-                padding: "14px 32px", borderRadius: 10,
-                background: "linear-gradient(135deg, #6B0A1A, #8B1A2B)",
-                border: "none", color: "#fff",
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 15, fontWeight: 700,
-                cursor: "pointer",
-                boxShadow: "0 6px 24px rgba(139,26,43,0.35)",
-                transition: "all 0.25s ease",
-                letterSpacing: "0.02em",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 36px rgba(139,26,43,0.5)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(139,26,43,0.35)"; }}
-            >Start Training →</button>
-          </div>
         </div>
       </section>
 
