@@ -70,18 +70,55 @@ const getExerciseAngle = (ex, kps) => {
 const getFeedback = (ex, angle) => {
   if (angle == null) return { text: 'Position yourself in frame', quality: 0 };
   const d = ex.downThreshold, u = ex.upThreshold;
-  const isCurl = ex.angleType === 'elbowCurl';
-  if (isCurl) {
-    if (angle < 40)  return { text: 'Too much - ease back slightly!', quality: 30 };
-    if (angle <= d / 2.5) return { text: 'Full curl! Squeeze the bicep!', quality: 100 };
-    if (angle <= u)  return { text: 'Standing - curl up fully!', quality: 80 };
-    return { text: 'Lower the weight fully for full range!', quality: 60 };
+
+  switch (ex.angleType) {
+    case 'elbowCurl':
+      if (angle < 40) return { text: 'Too much - ease back slightly!', quality: 30 };
+      if (angle <= d / 2.5) return { text: 'Full curl! Squeeze the bicep!', quality: 100 };
+      if (angle <= u) return { text: 'Curl it all the way up!', quality: 80 };
+      return { text: 'Lower the weight fully for full range!', quality: 60 };
+
+    case 'hip':
+      if (ex.id === 'plank') {
+        if (angle < 160) return { text: 'Hips sagging! Raise them up.', quality: 50 };
+        if (angle > 185) return { text: 'Hips too high! Lower them.', quality: 60 };
+        return { text: 'Perfect plank! Hold it steady!', quality: 100 };
+      }
+      if (angle < d - 20) return { text: 'Bending too far! Protect your lower back.', quality: 30 };
+      if (angle <= d) return { text: 'Great extension! Squeeze glutes.', quality: 100 };
+      if (angle <= (d + u) / 2) return { text: 'Keep going, extend further!', quality: 75 };
+      if (angle <= u) return { text: 'Hinge forward more.', quality: 50 };
+      return { text: 'Ready position - begin rep!', quality: 80 };
+
+    case 'elbow': 
+      if (angle < d - 25) return { text: 'Too deep - protect your shoulders!', quality: 20 };
+      if (angle <= d + 10) return { text: 'Perfect depth! Press explosively!', quality: 100 };
+      if (angle <= (d + u) / 2) return { text: 'Good - lower yourself a bit more!', quality: 75 };
+      if (angle <= u) return { text: 'Keep lowering...', quality: 50 };
+      return { text: 'Ready - begin your rep!', quality: 80 };
+
+    case 'knee': 
+      if (angle < d - 20) return { text: 'Too deep - protect your knees!', quality: 20 };
+      if (angle <= d + 10) return { text: 'Perfect depth! Drive through heels!', quality: 100 };
+      if (angle <= (d + u) / 2) return { text: 'Almost there, sink a little deeper!', quality: 75 };
+      if (angle <= u) return { text: 'Lower yourself down!', quality: 50 };
+      return { text: 'Standing tall - ready for next rep!', quality: 80 };
+
+    case 'kneeRaise': 
+      if (angle < u - 20) return { text: 'Knees way up! Excellent power!', quality: 100 };
+      if (angle <= u + 10) return { text: 'Great height! Keep the pace!', quality: 100 };
+      if (angle <= (d + u) / 2) return { text: 'Lift knees higher!', quality: 75 };
+      return { text: 'Keep moving! Maintain rhythm!', quality: 80 };
+
+    case 'trunk': 
+      if (angle < u) return { text: 'Great crunch! Squeeze abs!', quality: 100 };
+      if (angle < (d + u) / 2) return { text: 'Good, pull shoulders up more!', quality: 75 };
+      return { text: 'Lower down with control.', quality: 60 };
+
+    default:
+      if (angle <= d) return { text: 'Great form!', quality: 100 };
+      return { text: 'Keep going!', quality: 80 };
   }
-  if (angle < d - 30) return { text: 'Too deep - protect your joints!', quality: 20 };
-  if (angle <= d)     return { text: 'Perfect depth! Push back up!', quality: 100 };
-  if (angle <= (d + u) / 2) return { text: 'Good - a little deeper!', quality: 75 };
-  if (angle <= u)     return { text: 'Lower yourself down!', quality: 50 };
-  return { text: 'Ready position - begin your rep!', quality: 80 };
 };
 
 // --- Draw skeleton ------------------------------------------------------------
@@ -509,6 +546,8 @@ const WorkoutSession = ({ exercise, onBack }) => {
   const [formQuality, setFormQuality] = useState(0);
   const [calories, setCalories] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const repState = useRef("up"), lastRepTime = useRef(0);
   const angleWindow = useRef([]), startTime = useRef(Date.now());
 
@@ -516,7 +555,10 @@ const WorkoutSession = ({ exercise, onBack }) => {
     let mounted = true;
     const timer = setInterval(() => {
       const d = Math.floor((Date.now() - startTime.current) / 1000);
-      setDuration(d); setCalories(Math.floor(reps * 5.5 + d * 0.12));
+      const cpr = exercise.caloriesPerRep || 0;
+      const cps = exercise.caloriesPerSec || 0.05; // Base metabolic burn
+      setDuration(d); 
+      setCalories(Math.floor(reps * cpr + d * cps));
     }, 1000);
     const init = async () => {
       try {
@@ -626,6 +668,8 @@ const WorkoutSession = ({ exercise, onBack }) => {
             ))}
             <button
               onClick={async () => {
+                if (isSaving || saveSuccess) return;
+                setIsSaving(true);
                 try {
                   await API.post("/progress/workout", {
                     exercise: exercise.name,
@@ -634,32 +678,23 @@ const WorkoutSession = ({ exercise, onBack }) => {
                     estimatedCalories: calories,
                     formScore: formQuality,
                   });
-                  alert("Workout session saved successfully to MongoDB!");
-                  onBack();
+                  setIsSaving(false);
+                  setSaveSuccess(true);
+                  setTimeout(() => {
+                    onBack();
+                  }, 2500);
                 } catch (err) {
+                  setIsSaving(false);
                   console.error("Error saving session:", err);
-                  alert("Failed to save session, returning back.");
-                  onBack();
+                  alert("Failed to save session. Please check your connection.");
                 }
               }}
-              style={{
-                width: '100%',
-                padding: '14px',
-                borderRadius: 12,
-                border: 'none',
-                background: 'linear-gradient(135deg, #8DC63F, #5A9010)',
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: 14,
-                cursor: 'pointer',
-                marginTop: 10,
-                boxShadow: '0 4px 12px rgba(141,198,63,0.25)',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-            >
-              💾 Save & Finish Workout
+              style={{width:'100%',padding:'16px',background:isSaving?'#64748b':'linear-gradient(135deg, #22c55e, #10b981)',
+                border:'none',borderRadius:16,color:'white',fontSize:16,fontWeight:800,cursor:isSaving?'not-allowed':'pointer',
+                boxShadow:isSaving?'none':'0 12px 30px rgba(34,197,94,0.3)',transition:'all 0.3s',display:'flex',justifyContent:'center',alignItems:'center',gap:10}}
+              onMouseEnter={e=>{if(!isSaving) e.currentTarget.style.transform='translateY(-2px)'}}
+              onMouseLeave={e=>{if(!isSaving) e.currentTarget.style.transform='translateY(0)'}}>
+              {isSaving ? 'Saving to Cloud...' : '✅ Finish & Save Workout'}
             </button>
           </div>
           <div style={{background:'rgba(15,23,42,0.8)',backdropFilter:'blur(20px)',borderRadius:20,padding:22,border:'1px solid rgba(148,163,184,0.12)'}}>
@@ -674,6 +709,31 @@ const WorkoutSession = ({ exercise, onBack }) => {
           <VoiceAssistant workoutContext={{exercise:exercise.name,reps,formScore:formQuality}}/>
         </div>
       </div>
+
+      {/* SUCCESS OVERLAY */}
+      {saveSuccess && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(2, 6, 23, 0.95)', backdropFilter: 'blur(12px)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          zIndex: 9999, animation: 'wFadeUp 0.4s ease both'
+        }}>
+          <div style={{
+            width: 100, height: 100, borderRadius: '50%', background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 50, color: 'white', marginBottom: 24,
+            boxShadow: '0 20px 50px rgba(34, 197, 94, 0.4)', animation: 'coachPulse 1.5s infinite'
+          }}>
+            ✓
+          </div>
+          <h2 style={{ color: 'white', fontSize: 32, fontWeight: 900, margin: '0 0 12px' }}>
+            Workout Saved!
+          </h2>
+          <p style={{ color: '#94a3b8', fontSize: 16 }}>
+            Excellent work. Your progress is synced to the cloud.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

@@ -25,7 +25,7 @@ export const exercises = [
     targetMuscles: 'Chest, Shoulders, Triceps',
     description: 'Classic compound exercise targeting pectorals.',
     keyPoints: ['Body in straight line', 'Hands shoulder-width', 'Lower chest to floor', 'Full arm extension'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.32,
   },
   {
     id: 'wide-push-ups', name: 'Wide Push-ups', category: 'chest', icon: '🤲', level: 'Intermediate',
@@ -33,7 +33,7 @@ export const exercises = [
     targetMuscles: 'Outer Chest, Shoulders',
     description: 'Wide-grip push-up emphasising outer pectorals.',
     keyPoints: ['Hands 1.5× shoulder width', 'Elbows flare out', 'Lower chest to hands', 'Full extension'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.32,
   },
   {
     id: 'diamond-push-ups', name: 'Diamond Push-ups', category: 'chest', icon: '💎', level: 'Intermediate',
@@ -41,7 +41,7 @@ export const exercises = [
     targetMuscles: 'Inner Chest, Triceps',
     description: 'Close-grip diamond-hand push-up for triceps and inner chest.',
     keyPoints: ['Thumbs and index fingers touch', 'Elbows close to body', 'Full depth', 'Core tight'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.35,
   },
   {
     id: 'pike-push-ups', name: 'Pike Push-ups', category: 'chest', icon: '🔺', level: 'Intermediate',
@@ -49,7 +49,7 @@ export const exercises = [
     targetMuscles: 'Shoulders, Upper Chest',
     description: 'Downward-dog push-up hitting shoulders and upper chest.',
     keyPoints: ['Hips high', 'Lower head to floor', 'Push back up fully', 'Elbows back not out'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.40,
   },
   {
     id: 'decline-push-ups', name: 'Decline Push-ups', category: 'chest', icon: '📐', level: 'Intermediate',
@@ -57,7 +57,7 @@ export const exercises = [
     targetMuscles: 'Upper Chest, Front Deltoids',
     description: 'Feet-elevated push-up targeting upper chest.',
     keyPoints: ['Feet elevated', 'Straight body line', 'Lower chest to floor', 'Explosive press up'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.38,
   },
 
   // ── LEGS ───────────────────────────────────────────────
@@ -67,7 +67,7 @@ export const exercises = [
     targetMuscles: 'Quads, Glutes, Hamstrings',
     description: 'Fundamental lower-body compound movement.',
     keyPoints: ['Chest up, back straight', 'Push knees over toes', 'Thighs parallel at bottom', 'Drive through heels'],
-    angleType: 'knee', downThreshold: 105, upThreshold: 160,
+    angleType: 'knee', downThreshold: 105, upThreshold: 160, caloriesPerRep: 0.45,
   },
   {
     id: 'sumo-squats', name: 'Sumo Squats', category: 'legs', icon: '🏋️', level: 'Beginner',
@@ -75,7 +75,7 @@ export const exercises = [
     targetMuscles: 'Inner Thighs, Glutes, Quads',
     description: 'Wide-stance squat emphasising inner thighs and glutes.',
     keyPoints: ['Feet wide, toes out 45°', 'Knees track toes', 'Deep squat', 'Keep back upright'],
-    angleType: 'knee', downThreshold: 105, upThreshold: 160,
+    angleType: 'knee', downThreshold: 105, upThreshold: 160, caloriesPerRep: 0.45,
   },
   {
     id: 'lunges', name: 'Lunges', category: 'legs', icon: '🚶', level: 'Beginner',
@@ -83,7 +83,7 @@ export const exercises = [
     targetMuscles: 'Quads, Glutes, Hamstrings',
     description: 'Single-leg stepping exercise for balance and strength.',
     keyPoints: ['Step forward, knee at 90°', 'Back knee near floor', 'Front knee behind toe', 'Push back to start'],
-    angleType: 'knee', downThreshold: 105, upThreshold: 160,
+    angleType: 'knee', downThreshold: 105, upThreshold: 160, caloriesPerRep: 0.40,
   },
   {
     id: 'jump-squats', name: 'Jump Squats', category: 'legs', icon: '🦘', level: 'Intermediate',
@@ -91,7 +91,7 @@ export const exercises = [
     targetMuscles: 'Quads, Calves, Glutes',
     description: 'Explosive plyometric squat for power development.',
     keyPoints: ['Squat to parallel', 'Explode upward', 'Land softly, knees bent', 'Immediate re-squat'],
-    angleType: 'knee', downThreshold: 105, upThreshold: 160,
+    angleType: 'knee', downThreshold: 105, upThreshold: 160, caloriesPerRep: 0.65,
   },
   {
     id: 'glute-bridge', name: 'Glute Bridge', category: 'legs', icon: '🌉', level: 'Beginner',
@@ -99,7 +99,7 @@ export const exercises = [
     targetMuscles: 'Glutes, Hamstrings, Core',
     description: 'Lying hip thrust targeting posterior chain.',
     keyPoints: ['Feet flat on floor', 'Drive hips up high', 'Squeeze glutes at top', 'Lower controlled'],
-    angleType: 'hip', downThreshold: 120, upThreshold: 160,
+    angleType: 'hip', downThreshold: 120, upThreshold: 160, caloriesPerRep: 0.20,
   },
   {
     id: 'calf-raises', name: 'Calf Raises', category: 'legs', icon: '👟', level: 'Beginner',
@@ -107,7 +107,7 @@ export const exercises = [
     targetMuscles: 'Calves (Gastrocnemius, Soleus)',
     description: 'Standing heel raise to strengthen calf muscles.',
     keyPoints: ['Stand tall', 'Rise on toes fully', 'Hold briefly at top', 'Lower slowly'],
-    angleType: 'knee', downThreshold: 140, upThreshold: 170,
+    angleType: 'knee', downThreshold: 140, upThreshold: 170, caloriesPerRep: 0.15,
   },
 
   // ── BACK ───────────────────────────────────────────────
@@ -117,7 +117,7 @@ export const exercises = [
     targetMuscles: 'Lower Back, Glutes, Rear Delts',
     description: 'Prone back extension strengthening the posterior chain.',
     keyPoints: ['Lie face down', 'Lift arms and legs together', 'Hold at top 2 seconds', 'Lower controlled'],
-    angleType: 'hip', downThreshold: 150, upThreshold: 175,
+    angleType: 'hip', downThreshold: 150, upThreshold: 175, caloriesPerRep: 0.20,
   },
   {
     id: 'good-mornings', name: 'Good Mornings', category: 'back', icon: '☀️', level: 'Intermediate',
@@ -125,7 +125,7 @@ export const exercises = [
     targetMuscles: 'Hamstrings, Lower Back, Glutes',
     description: 'Hip-hinge movement for posterior chain strength.',
     keyPoints: ['Bar on upper back', 'Hinge at hips', 'Back stays flat', 'Drive hips forward to stand'],
-    angleType: 'hip', downThreshold: 120, upThreshold: 165,
+    angleType: 'hip', downThreshold: 120, upThreshold: 165, caloriesPerRep: 0.35,
   },
   {
     id: 'bent-over-row', name: 'Bent Over Row', category: 'back', icon: '🏋️', level: 'Intermediate',
@@ -133,7 +133,7 @@ export const exercises = [
     targetMuscles: 'Lats, Rhomboids, Biceps',
     description: 'Barbell or dumbbell row for upper back thickness.',
     keyPoints: ['Hinge forward 45°', 'Pull elbows to sides', 'Squeeze shoulder blades', 'Lower fully'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.35,
   },
   {
     id: 'back-extension', name: 'Back Extension', category: 'back', icon: '🔙', level: 'Beginner',
@@ -141,7 +141,7 @@ export const exercises = [
     targetMuscles: 'Erector Spinae, Glutes',
     description: 'Hyperextension movement for lower back endurance.',
     keyPoints: ['Hips on pad', 'Lower torso down', 'Raise to parallel', 'Do not hyperextend'],
-    angleType: 'hip', downThreshold: 120, upThreshold: 165,
+    angleType: 'hip', downThreshold: 120, upThreshold: 165, caloriesPerRep: 0.25,
   },
   {
     id: 'bird-dog', name: 'Bird Dog', category: 'back', icon: '🐦', level: 'Beginner',
@@ -149,7 +149,7 @@ export const exercises = [
     targetMuscles: 'Core, Lower Back, Glutes',
     description: 'Quadruped opposite arm-leg extension for stability.',
     keyPoints: ['Start on hands and knees', 'Extend opposite arm+leg', 'Hold 2 seconds', 'Return and switch'],
-    angleType: 'hip', downThreshold: 150, upThreshold: 175,
+    angleType: 'hip', downThreshold: 150, upThreshold: 175, caloriesPerRep: 0.20,
   },
 
   // ── SHOULDERS ──────────────────────────────────────────
@@ -159,7 +159,7 @@ export const exercises = [
     targetMuscles: 'Front & Side Deltoids, Triceps',
     description: 'Overhead pressing for shoulder mass and strength.',
     keyPoints: ['Elbows at 90° at start', 'Press directly overhead', 'Fully lock out', 'Lower to ear level'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.30,
   },
   {
     id: 'lateral-raise', name: 'Lateral Raise', category: 'shoulders', icon: '🦅', level: 'Beginner',
@@ -167,7 +167,7 @@ export const exercises = [
     targetMuscles: 'Side Deltoids',
     description: 'Dumbbell raise to the side for shoulder width.',
     keyPoints: ['Slight bend in elbow', 'Raise to shoulder height', 'Pinky slightly higher', 'Lower slowly'],
-    angleType: 'kneeRaise', downThreshold: 150, upThreshold: 90,
+    angleType: 'kneeRaise', downThreshold: 150, upThreshold: 90, caloriesPerRep: 0.20,
   },
   {
     id: 'front-raise', name: 'Front Raise', category: 'shoulders', icon: '⬆️', level: 'Beginner',
@@ -175,7 +175,7 @@ export const exercises = [
     targetMuscles: 'Front Deltoids',
     description: 'Dumbbell raise to front for anterior deltoid.',
     keyPoints: ['Arms straight', 'Raise to shoulder height', 'Control the descent', 'Alternate or both'],
-    angleType: 'kneeRaise', downThreshold: 150, upThreshold: 90,
+    angleType: 'kneeRaise', downThreshold: 150, upThreshold: 90, caloriesPerRep: 0.20,
   },
   {
     id: 'arnold-press', name: 'Arnold Press', category: 'shoulders', icon: '💪', level: 'Intermediate',
@@ -183,7 +183,7 @@ export const exercises = [
     targetMuscles: 'All 3 Deltoid Heads, Triceps',
     description: 'Rotating shoulder press invented by Arnold Schwarzenegger.',
     keyPoints: ['Start palms facing you', 'Rotate outward as you press', 'Full overhead extension', 'Reverse on the way down'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.35,
   },
   {
     id: 'upright-row', name: 'Upright Row', category: 'shoulders', icon: '⬆️', level: 'Intermediate',
@@ -191,7 +191,7 @@ export const exercises = [
     targetMuscles: 'Traps, Side Deltoids',
     description: 'Vertical pull targeting traps and lateral deltoids.',
     keyPoints: ['Grip narrow, overhand', 'Pull to chin height', 'Elbows above wrists', 'Lower controlled'],
-    angleType: 'elbow', downThreshold: 90, upThreshold: 150,
+    angleType: 'elbow', downThreshold: 90, upThreshold: 150, caloriesPerRep: 0.25,
   },
 
   // ── ARMS ───────────────────────────────────────────────
@@ -201,7 +201,7 @@ export const exercises = [
     targetMuscles: 'Biceps Brachii',
     description: 'Classic isolation exercise for bicep size and strength.',
     keyPoints: ['Elbows stationary at sides', 'Full range of motion', 'Control the negative', 'Squeeze at top'],
-    angleType: 'elbowCurl', downThreshold: 150, upThreshold: 60,
+    angleType: 'elbowCurl', downThreshold: 150, upThreshold: 60, caloriesPerRep: 0.18,
   },
   {
     id: 'hammer-curls', name: 'Hammer Curls', category: 'arms', icon: '🔨', level: 'Beginner',
@@ -209,7 +209,7 @@ export const exercises = [
     targetMuscles: 'Biceps, Brachialis, Forearms',
     description: 'Neutral-grip curl for overall arm thickness.',
     keyPoints: ['Thumbs up grip', 'Elbows fixed at sides', 'Curl to shoulder', 'Lower slowly'],
-    angleType: 'elbowCurl', downThreshold: 150, upThreshold: 60,
+    angleType: 'elbowCurl', downThreshold: 150, upThreshold: 60, caloriesPerRep: 0.18,
   },
   {
     id: 'tricep-dips', name: 'Tricep Dips', category: 'arms', icon: '💺', level: 'Beginner',
@@ -217,7 +217,7 @@ export const exercises = [
     targetMuscles: 'Triceps, Chest, Shoulders',
     description: 'Bodyweight dip for tricep mass.',
     keyPoints: ['Hands on edge behind', 'Lower until elbows 90°', 'Press back up fully', 'Keep torso upright'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.25,
   },
   {
     id: 'overhead-tricep', name: 'Overhead Tricep Ext.', category: 'arms', icon: '🔝', level: 'Intermediate',
@@ -225,7 +225,7 @@ export const exercises = [
     targetMuscles: 'Long Head Triceps',
     description: 'Overhead extension for full tricep stretch.',
     keyPoints: ['Upper arms vertical', 'Lower weight behind head', 'Full extension overhead', 'Elbows in'],
-    angleType: 'elbowCurl', downThreshold: 90, upThreshold: 155,
+    angleType: 'elbowCurl', downThreshold: 90, upThreshold: 155, caloriesPerRep: 0.20,
   },
   {
     id: 'skull-crushers', name: 'Skull Crushers', category: 'arms', icon: '💀', level: 'Intermediate',
@@ -233,7 +233,7 @@ export const exercises = [
     targetMuscles: 'Triceps (all 3 heads)',
     description: 'Lying tricep extension for maximum mass.',
     keyPoints: ['Lie flat on bench', 'Lower bar to forehead', 'Extend fully', 'Keep elbows fixed'],
-    angleType: 'elbowCurl', downThreshold: 90, upThreshold: 155,
+    angleType: 'elbowCurl', downThreshold: 90, upThreshold: 155, caloriesPerRep: 0.22,
   },
 
   // ── CORE ───────────────────────────────────────────────
@@ -243,7 +243,7 @@ export const exercises = [
     targetMuscles: 'Core, Shoulders, Glutes',
     description: 'Isometric core hold for stability and endurance.',
     keyPoints: ['Forearms on floor', 'Body perfectly straight', 'No hips sag or pike', 'Breathe steadily'],
-    angleType: 'hip', downThreshold: 155, upThreshold: 180,
+    angleType: 'hip', downThreshold: 155, upThreshold: 180, caloriesPerSec: 0.12, caloriesPerRep: 0,
   },
   {
     id: 'crunches', name: 'Crunches', category: 'core', icon: '🔄', level: 'Beginner',
@@ -251,7 +251,7 @@ export const exercises = [
     targetMuscles: 'Rectus Abdominis',
     description: 'Classic abdominal crunch for core strength.',
     keyPoints: ['Feet flat on floor', 'Hands behind head lightly', 'Curl shoulders off floor', 'Lower with control'],
-    angleType: 'trunk', downThreshold: 150, upThreshold: 110,
+    angleType: 'trunk', downThreshold: 150, upThreshold: 110, caloriesPerRep: 0.20,
   },
   {
     id: 'leg-raises', name: 'Leg Raises', category: 'core', icon: '🦵', level: 'Intermediate',
@@ -259,7 +259,7 @@ export const exercises = [
     targetMuscles: 'Lower Abs, Hip Flexors',
     description: 'Lying leg raise for lower abdominal development.',
     keyPoints: ['Lie flat, back pressed down', 'Raise legs to 90°', 'Lower slowly without touching', 'Keep legs straight'],
-    angleType: 'kneeRaise', downThreshold: 160, upThreshold: 80,
+    angleType: 'kneeRaise', downThreshold: 160, upThreshold: 80, caloriesPerRep: 0.25,
   },
   {
     id: 'mountain-climbers', name: 'Mountain Climbers', category: 'core', icon: '⛰️', level: 'Intermediate',
@@ -267,7 +267,7 @@ export const exercises = [
     targetMuscles: 'Core, Shoulders, Hip Flexors',
     description: 'Dynamic plank with alternating knee drives.',
     keyPoints: ['Start in push-up position', 'Drive knees to chest alternately', 'Keep hips level', 'Move fast'],
-    angleType: 'kneeRaise', downThreshold: 140, upThreshold: 70,
+    angleType: 'kneeRaise', downThreshold: 140, upThreshold: 70, caloriesPerRep: 0.30,
   },
   {
     id: 'bicycle-crunches', name: 'Bicycle Crunches', category: 'core', icon: '🚴', level: 'Intermediate',
@@ -275,7 +275,7 @@ export const exercises = [
     targetMuscles: 'Obliques, Rectus Abdominis',
     description: 'Rotating crunch with alternating knee drive for obliques.',
     keyPoints: ['Shoulders off floor', 'Rotate elbow to opposite knee', 'Fully extend other leg', 'Controlled rhythm'],
-    angleType: 'trunk', downThreshold: 150, upThreshold: 110,
+    angleType: 'trunk', downThreshold: 150, upThreshold: 110, caloriesPerRep: 0.30,
   },
 
   // ── CARDIO ─────────────────────────────────────────────
@@ -285,7 +285,7 @@ export const exercises = [
     targetMuscles: 'Full Body, Cardio',
     description: 'Full-body cardio exercise improving coordination.',
     keyPoints: ['Jump feet wide simultaneously', 'Raise arms overhead', 'Return together', 'Maintain rhythm'],
-    angleType: 'kneeRaise', downThreshold: 160, upThreshold: 80,
+    angleType: 'kneeRaise', downThreshold: 160, upThreshold: 80, caloriesPerRep: 0.25,
   },
   {
     id: 'high-knees', name: 'High Knees', category: 'cardio', icon: '🏃', level: 'Beginner',
@@ -293,7 +293,7 @@ export const exercises = [
     targetMuscles: 'Hip Flexors, Core, Cardio',
     description: 'Running in place with exaggerated knee drive.',
     keyPoints: ['Drive knees above hip height', 'Pump arms in rhythm', 'Stay on balls of feet', 'Maintain pace'],
-    angleType: 'kneeRaise', downThreshold: 140, upThreshold: 70,
+    angleType: 'kneeRaise', downThreshold: 140, upThreshold: 70, caloriesPerRep: 0.35,
   },
   {
     id: 'burpees', name: 'Burpees', category: 'cardio', icon: '💥', level: 'Advanced',
@@ -301,7 +301,7 @@ export const exercises = [
     targetMuscles: 'Full Body, Cardio, Strength',
     description: 'Full-body explosive movement for conditioning.',
     keyPoints: ['Drop to push-up position', 'Perform push-up', 'Jump feet to hands', 'Jump and clap overhead'],
-    angleType: 'knee', downThreshold: 105, upThreshold: 160,
+    angleType: 'knee', downThreshold: 105, upThreshold: 160, caloriesPerRep: 0.70,
   },
   {
     id: 'jump-rope', name: 'Jump Rope', category: 'cardio', icon: '🪢', level: 'Beginner',
@@ -309,7 +309,7 @@ export const exercises = [
     targetMuscles: 'Calves, Coordination, Cardio',
     description: 'Simulated jump rope for cardio and footwork.',
     keyPoints: ['Stay on toes', 'Small jumps, consistent rhythm', 'Wrists rotate rope', 'Land softly'],
-    angleType: 'knee', downThreshold: 150, upThreshold: 170,
+    angleType: 'knee', downThreshold: 150, upThreshold: 170, caloriesPerRep: 0.15,
   },
   {
     id: 'box-jumps', name: 'Box Jumps', category: 'cardio', icon: '📦', level: 'Intermediate',
@@ -317,6 +317,6 @@ export const exercises = [
     targetMuscles: 'Quads, Glutes, Explosive Power',
     description: 'Plyometric jump onto elevated surface for power.',
     keyPoints: ['Load with squat', 'Explode up with arms', 'Land softly, knees bent', 'Step down safely'],
-    angleType: 'knee', downThreshold: 105, upThreshold: 160,
+    angleType: 'knee', downThreshold: 105, upThreshold: 160, caloriesPerRep: 0.65,
   },
 ];
