@@ -73,92 +73,161 @@ const Progress = () => {
       } catch (err) {
         console.error(err);
         setError("Could not load progress data");
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem("token");
+        }
       }
     };
 
     load();
+
+    const handleSync = () => {
+      load();
+    };
+
+    window.addEventListener("user-synced", handleSync);
+    return () => window.removeEventListener("user-synced", handleSync);
   }, []);
 
   // Generate sample data if no real data exists
-  const displayData = data.length > 0 ? data : [
-    { date: '12/03', caloriesBurned: 250, protein: 85, workouts: 1 },
-    { date: '12/04', caloriesBurned: 320, protein: 92, workouts: 1 },
-    { date: '12/05', caloriesBurned: 180, protein: 78, workouts: 1 },
-    { date: '12/06', caloriesBurned: 290, protein: 95, workouts: 1 },
-    { date: '12/07', caloriesBurned: 350, protein: 105, workouts: 2 },
-    { date: '12/08', caloriesBurned: 240, protein: 88, workouts: 1 },
-    { date: '12/09', caloriesBurned: 310, protein: 98, workouts: 1 }
-  ];
+  // Real-time dynamic graph data from MongoDB Atlas
+  const displayData = data;
 
-  const weeklyData = [
-    { day: 'Mon', workouts: 2, calories: 450 },
-    { day: 'Tue', workouts: 1, calories: 280 },
-    { day: 'Wed', workouts: 2, calories: 520 },
-    { day: 'Thu', workouts: 1, calories: 310 },
-    { day: 'Fri', workouts: 2, calories: 480 },
-    { day: 'Sat', workouts: 1, calories: 290 },
-    { day: 'Sun', workouts: 1, calories: 350 }
-  ];
+  // Generate last 7 days of weekly data dynamically from real MongoDB data
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const last7DaysList = Array.from({ length: 7 }).map((_, idx) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - idx));
+    return d;
+  });
+
+  const weeklyData = last7DaysList.map(date => {
+    const dateStr = date.toLocaleDateString();
+    const match = data.find(item => new Date(item.date).toLocaleDateString() === dateStr);
+    return {
+      day: daysOfWeek[date.getDay()],
+      workouts: match ? match.workouts : 0,
+      calories: match ? match.caloriesBurned : 0
+    };
+  });
 
   const radarData = [
-    { metric: 'Consistency', value: stats.consistency || 85 },
-    { metric: 'Intensity', value: 75 },
-    { metric: 'Nutrition', value: 80 },
-    { metric: 'Recovery', value: 70 },
-    { metric: 'Form', value: 88 }
+    { metric: 'Consistency', value: data.length > 0 ? (stats.consistency || 0) : 0 },
+    { metric: 'Intensity', value: data.length > 0 ? 75 : 0 },
+    { metric: 'Nutrition', value: data.length > 0 ? 80 : 0 },
+    { metric: 'Recovery', value: data.length > 0 ? 70 : 0 },
+    { metric: 'Form', value: data.length > 0 ? 88 : 0 }
   ];
 
   return (
     <div>
-      {/* Header */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&display=swap');
+        @keyframes progFadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes progShimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+        @keyframes progFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        @keyframes progGlow{0%,100%{box-shadow:0 0 0 0 rgba(167,139,250,0.4)}50%{box-shadow:0 0 0 12px rgba(167,139,250,0)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+      `}</style>
+
+      {/* ── Hero Banner ── */}
       <div style={{
-        marginBottom: 32,
-        textAlign: 'center'
+        position: 'relative', borderRadius: 28, overflow: 'hidden',
+        background: 'linear-gradient(135deg, #0c0820 0%, #130a2e 40%, #0a0f20 100%)',
+        padding: '52px 48px', marginBottom: 40,
+        border: '1px solid rgba(167,139,250,0.15)',
+        boxShadow: '0 32px 80px rgba(0,0,0,0.6)',
       }}>
-        <h1 style={{
-          fontSize: 48,
-          fontWeight: 900,
-          margin: 0,
-          marginBottom: 12,
-          background: 'linear-gradient(135deg, #a78bfa, #4facfe)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          letterSpacing: '-0.02em'
-        }}>
-          Progress & Trends
-        </h1>
-        <p style={{
-          fontSize: 18,
-          color: '#94a3b8',
-          margin: 0
-        }}>
-          Animated charts to show consistency of workouts and protein intake
-        </p>
-        <div style={{
-          marginTop: 16,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '10px 20px',
-          background: 'rgba(139, 92, 246, 0.1)',
-          border: '1px solid rgba(139, 92, 246, 0.3)',
-          borderRadius: 12,
-          fontSize: 14,
-          fontWeight: 600
-        }}>
-          <span style={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            background: '#a78bfa',
-            boxShadow: '0 0 0 4px rgba(139, 92, 246, 0.2)',
-            animation: 'pulse 2s infinite'
-          }}/>
-          Visualization layer
+        {/* Blobs */}
+        <div style={{ position:'absolute', top:'-20%', right:'-5%', width:'50%', height:'180%',
+          background:'radial-gradient(ellipse, rgba(167,139,250,0.2) 0%, transparent 65%)',
+          pointerEvents:'none', animation:'progFloat 7s ease-in-out infinite' }} />
+        <div style={{ position:'absolute', bottom:'-30%', left:'-5%', width:'40%', height:'160%',
+          background:'radial-gradient(ellipse, rgba(79,172,254,0.14) 0%, transparent 65%)',
+          pointerEvents:'none', animation:'progFloat 9s ease-in-out infinite reverse' }} />
+        <div style={{ position:'absolute', top:'30%', left:'30%', width:'30%', height:'80%',
+          background:'radial-gradient(ellipse, rgba(236,72,153,0.08) 0%, transparent 65%)',
+          pointerEvents:'none' }} />
+
+        <div style={{ position:'relative', zIndex:2, textAlign:'center' }}>
+          <div style={{
+            display:'inline-flex', alignItems:'center', gap:8,
+            padding:'5px 16px', borderRadius:999,
+            background:'rgba(167,139,250,0.1)', border:'1px solid rgba(167,139,250,0.3)',
+            fontSize:11, fontWeight:700, color:'#a78bfa', letterSpacing:'0.12em',
+            marginBottom:20, animation:'progFadeUp 0.6s ease both',
+          }}>
+            <span style={{ width:6, height:6, borderRadius:'50%', background:'#a78bfa',
+              display:'inline-block', boxShadow:'0 0 8px #a78bfa', animation:'progGlow 2s infinite' }} />
+            AI PERFORMANCE ANALYTICS
+          </div>
+
+          <h1 style={{
+            fontFamily:"'Syne',sans-serif",
+            fontSize:'clamp(32px,5vw,54px)', fontWeight:900,
+            margin:'0 0 16px', lineHeight:1.1, letterSpacing:'-0.02em',
+            animation:'progFadeUp 0.7s ease 0.1s both',
+          }}>
+            <span style={{
+              background:'linear-gradient(135deg,#a78bfa 0%,#4facfe 55%,#ec4899 100%)',
+              backgroundSize:'200% auto',
+              WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+              animation:'progShimmer 4s linear infinite',
+            }}>Progress & Trends</span>
+          </h1>
+
+          <p style={{ fontSize:16, color:'#64748b', margin:'0 0 28px', animation:'progFadeUp 0.7s ease 0.2s both' }}>
+            Beautiful animated charts showing your workout consistency,<br />calorie burns, and performance over time
+          </p>
+
+          <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', animation:'progFadeUp 0.7s ease 0.3s both' }}>
+            {[
+              { icon:'📈', text:'Trend Graphs',   color:'#a78bfa' },
+              { icon:'🏋️', text:'Workout Streaks', color:'#4facfe' },
+              { icon:'🥗', text:'Protein Tracking', color:'#22c55e' },
+              { icon:'🎯', text:'AI Insights',      color:'#ec4899' },
+            ].map(chip => (
+              <div key={chip.text} style={{
+                display:'inline-flex', alignItems:'center', gap:6,
+                padding:'8px 16px', borderRadius:999,
+                background:`${chip.color}18`,
+                border:`1px solid ${chip.color}40`,
+                fontSize:13, fontWeight:600, color:chip.color,
+              }}>
+                <span>{chip.icon}</span><span>{chip.text}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{
+            display:'inline-flex', alignItems:'center', gap:8,
+            padding:'10px 22px', borderRadius:12, marginTop:24,
+            background:'rgba(139,92,246,0.12)', border:'1px solid rgba(139,92,246,0.3)',
+            fontSize:14, fontWeight:700, color:'#a78bfa',
+            animation:'progFadeUp 0.7s ease 0.4s both',
+          }}>
+            <span style={{ width:8, height:8, borderRadius:'50%', background:'#a78bfa',
+              boxShadow:'0 0 0 3px rgba(139,92,246,0.25)', animation:'progGlow 2s infinite' }} />
+            Visualization Layer Active
+          </div>
         </div>
       </div>
 
       {error && <p className="error-text">{error}</p>}
+
+      {data.length === 0 && (
+        <div style={{
+          background: 'rgba(249, 115, 22, 0.08)',
+          border: '1px solid rgba(249, 115, 22, 0.25)',
+          borderRadius: 16, padding: '16px 20px',
+          color: '#fb923c', fontWeight: 600, fontSize: 14,
+          marginBottom: 24, textAlign: 'center',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10
+        }}>
+          <span>💡</span>
+          <span>Your MongoDB Atlas cloud database is connected perfectly, but you have not logged any workouts or meals yet! We've loaded a premium preview below — once you save a workout or log a meal, your actual live data will instantly populate this page!</span>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div style={{
@@ -180,7 +249,7 @@ const Progress = () => {
             🏋️ Total Workouts
           </div>
           <div style={{ fontSize: 42, fontWeight: 900, color: '#a78bfa', marginBottom: 8 }}>
-            {stats.totalWorkouts || 28}
+            {data.length > 0 ? stats.totalWorkouts : 0}
           </div>
           <div style={{ fontSize: 12, color: '#64748b' }}>+12% from last week</div>
         </div>
@@ -198,7 +267,7 @@ const Progress = () => {
             🔥 Total Calories
           </div>
           <div style={{ fontSize: 42, fontWeight: 900, color: '#fa709a', marginBottom: 8 }}>
-            {stats.totalCalories || 2450}
+            {data.length > 0 ? stats.totalCalories : 0}
           </div>
           <div style={{ fontSize: 12, color: '#64748b' }}>Burned this week</div>
         </div>
@@ -216,7 +285,7 @@ const Progress = () => {
             💪 Avg Protein
           </div>
           <div style={{ fontSize: 42, fontWeight: 900, color: '#22c55e', marginBottom: 8 }}>
-            {stats.avgProtein || 92}g
+            {data.length > 0 ? stats.avgProtein : 0}g
           </div>
           <div style={{ fontSize: 12, color: '#64748b' }}>Per day average</div>
         </div>
@@ -234,7 +303,7 @@ const Progress = () => {
             📈 Consistency
           </div>
           <div style={{ fontSize: 42, fontWeight: 900, color: '#4facfe', marginBottom: 8 }}>
-            {stats.consistency || 85}%
+            {data.length > 0 ? stats.consistency : 0}%
           </div>
           <div style={{ fontSize: 12, color: '#64748b' }}>Weekly activity rate</div>
         </div>

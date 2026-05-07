@@ -1,95 +1,208 @@
-import React from "react";
-import { NavLink, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import { UserButton, useUser } from "@clerk/clerk-react";
+import API from "../api.js";
+
 const Navbar = () => {
   const { user } = useUser();
+  const [scrolled, setScrolled] = useState(false);
 
-  const linkStyle = (isActive) => ({
-    textDecoration: "none",
-    fontSize: 14,
-    fontWeight: 500,
-    color: isActive ? "#FF6B35" : "#94a3b8",
-    padding: "6px 2px",
-   borderBottom: isActive ? "2px solid #FF6B35" : "2px solid transparent",
-    transition: "color 0.2s, border-color 0.2s",
-  });
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  useEffect(() => {
+    const syncUser = async () => {
+      if (user) {
+        try {
+          const email = user.primaryEmailAddress?.emailAddress;
+          const name = user.fullName || user.firstName || email.split("@")[0];
+          const { data } = await API.post("/auth/clerk-sync", { email, name });
+          if (data && data.token) {
+            localStorage.setItem("token", data.token);
+            console.log("Clerk authenticated user synced with MongoDB.");
+            window.dispatchEvent(new Event("user-synced"));
+          }
+        } catch (err) {
+          console.error("Failed to sync Clerk user with backend:", err);
+        }
+      }
+    };
+    syncUser();
+  }, [user]);
+
+  const navItems = [
+    { to: "/dashboard", label: "Dashboard", icon: "⚡" },
+    { to: "/workout",   label: "Workout",   icon: "🏋️" },
+    { to: "/diet",      label: "Diet",      icon: "🥗" },
+    { to: "/progress",  label: "Progress",  icon: "📊" },
+    { to: "/ai-coach",  label: "AI Coach",  icon: "🤖" },
+    { to: "/elite",     label: "Elite Lab", icon: "👑" },
+    { to: "/profile",   label: "Profile",   icon: "👤" },
+  ];
 
   return (
-    <header style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-      height: 64,
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 36px",
-      background: "rgba(2,6,23,0.9)",
-      backdropFilter: "blur(16px)",
-      borderBottom: "1px solid rgba(148,163,184,0.1)",
-    }}>
-      {/* Logo */}
-<Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
-  <div style={{
-    width: 36, height: 36, borderRadius: 10,
-    background: "linear-gradient(135deg, #FF6B35, #FF9A3C)",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    boxShadow: "0 0 16px rgba(255,107,53,0.3)",
-  }}>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="white" strokeWidth="1.5" fill="none"/>
-      <path d="M10 6L14 8.5V11.5L10 14L6 11.5V8.5L10 6Z" fill="white" opacity="0.5"/>
-    </svg>
-  </div>
-  <span style={{ fontWeight: 500, fontSize: 17, letterSpacing: "0.03em", color: "#f9fafb" }}>
-    fit india<span style={{ color: "#FF9A3C" }}>.</span><span style={{ color: "#FF6B35" }}>ai</span>
-  </span>
-</Link>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
 
-      {/* Nav links */}
-      <nav style={{ display: "flex", alignItems: "center", gap: 28 }}>
-        <NavLink to="/dashboard" style={({ isActive }) => linkStyle(isActive)}>Dashboard</NavLink>
-        <NavLink to="/workout"   style={({ isActive }) => linkStyle(isActive)}>Workout</NavLink>
-        <NavLink to="/diet"      style={({ isActive }) => linkStyle(isActive)}>Diet</NavLink>
-        <NavLink to="/progress"  style={({ isActive }) => linkStyle(isActive)}>Progress</NavLink>
-      </nav>
+        @keyframes pulseGreen {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(141,198,63,0.4); }
+          50%       { box-shadow: 0 0 0 10px rgba(141,198,63,0); }
+        }
 
-      {/* User info + Clerk UserButton (handles profile & logout) */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        {user && (
-          <span style={{ fontSize: 13, color: "#64748b" }}>
-            {user.firstName ?? user.emailAddresses?.[0]?.emailAddress?.split("@")[0]}
+        .app-nav-link {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          color: #3A5A1A;
+          text-decoration: none;
+          cursor: pointer;
+          background: none;
+          border: none;
+          padding: 4px 0;
+          transition: color 0.2s ease;
+          position: relative;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          letter-spacing: 0.01em;
+        }
+        .app-nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: -3px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: #8DC63F;
+          transition: width 0.3s ease;
+          border-radius: 2px;
+        }
+        .app-nav-link:hover { color: #1A2B0A; }
+        .app-nav-link:hover::after { width: 100%; }
+        .app-nav-link.active {
+          color: #3A7A10 !important;
+          font-weight: 700 !important;
+        }
+        .app-nav-link.active::after {
+          width: 100% !important;
+          background: #8DC63F !important;
+        }
+
+        .app-nav-icon { font-size: 13px; line-height: 1; }
+      `}</style>
+
+      <header style={{
+        position: "fixed",
+        top: 0, left: 0, right: 0,
+        zIndex: 200,
+        height: 62,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 60px",
+        background: scrolled
+          ? "rgba(247,249,242,0.97)"
+          : "rgba(247,249,242,0.92)",
+        backdropFilter: "blur(16px)",
+        borderBottom: `1px solid ${scrolled ? "rgba(141,198,63,0.22)" : "rgba(210,225,180,0.4)"}`,
+        transition: "all 0.3s ease",
+        boxShadow: scrolled ? "0 2px 24px rgba(141,198,63,0.1)" : "none",
+      }}>
+
+        {/* ── Logo ── */}
+        <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 9 }}>
+          <div style={{
+            width: 34,
+            height: 34,
+            borderRadius: 10,
+            background: "linear-gradient(135deg, #5A9010, #8DC63F)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 0 16px rgba(141,198,63,0.38)",
+            animation: "pulseGreen 3s ease-in-out infinite",
+            flexShrink: 0,
+          }}>
+            <span style={{ fontSize: 17 }}>💪</span>
+          </div>
+          <span style={{
+            fontFamily: "'Syne', sans-serif",
+            fontWeight: 800,
+            fontSize: 18,
+            color: "#3A7A10",
+            letterSpacing: "-0.01em",
+          }}>
+            FitIndia<span style={{ color: "#8DC63F" }}>.ai</span>
           </span>
-        )}
+        </Link>
 
-        <UserButton
-          afterSignOutUrl="/"
-          appearance={{
-            variables: {
-              colorPrimary: "#FF6B35",
-              colorBackground:    "#0f172a",
-              colorText:          "#f9fafb",
-              colorTextSecondary: "#94a3b8",
-              borderRadius:       "10px",
-            },
-            elements: {
-            avatarBox: {
-  width: 36, height: 36,
-  border: "2px solid rgba(255,107,53,0.45)", // ✅ change
-  borderRadius: "50%",
-  boxShadow: "0 0 14px rgba(255,107,53,0.2)", // ✅ change
-},
-              userButtonPopoverCard: {
-                background:     "rgba(15,23,42,0.97)",
-                border:         "1px solid rgba(148,163,184,0.15)",
-                borderRadius:   "12px",
-                boxShadow:      "0 20px 50px rgba(0,0,0,0.5)",
-                backdropFilter: "blur(16px)",
+        {/* ── Nav Links ── */}
+        <nav style={{ display: "flex", alignItems: "center", gap: 30 }}>
+          {navItems.map(({ to, label, icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `app-nav-link${isActive ? " active" : ""}`
+              }
+            >
+              <span className="app-nav-icon">{icon}</span>
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* ── Right: User info + Avatar ── */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          {user && (
+            <span style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 13,
+              color: "#667755",
+              fontWeight: 500,
+            }}>
+              👋 {user.firstName ?? user.emailAddresses?.[0]?.emailAddress?.split("@")[0]}
+            </span>
+          )}
+
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{
+              variables: {
+                colorPrimary:       "#8DC63F",
+                colorBackground:    "#F7F9F2",
+                colorText:          "#1A2B0A",
+                colorTextSecondary: "#667755",
+                borderRadius:       "10px",
               },
-              userButtonPopoverActionButton: { color: "#e2e8f0" },
-              userButtonPopoverActionButtonText: { color: "#e2e8f0" },
-              userButtonPopoverFooter: { display: "none" },
-            },
-          }}
-        />
-      </div>
-    </header>
+              elements: {
+                avatarBox: {
+                  width: 36,
+                  height: 36,
+                  border: "2px solid rgba(141,198,63,0.55)",
+                  borderRadius: "50%",
+                  boxShadow: "0 0 14px rgba(141,198,63,0.25)",
+                },
+                userButtonPopoverCard: {
+                  background:     "rgba(247,249,242,0.98)",
+                  border:         "1px solid rgba(141,198,63,0.2)",
+                  borderRadius:   "14px",
+                  boxShadow:      "0 20px 60px rgba(0,0,0,0.12)",
+                  backdropFilter: "blur(16px)",
+                },
+                userButtonPopoverActionButton: { color: "#3A5A1A" },
+                userButtonPopoverActionButtonText: { color: "#3A5A1A" },
+                userButtonPopoverFooter: { display: "none" },
+              },
+            }}
+          />
+        </div>
+      </header>
+    </>
   );
 };
 

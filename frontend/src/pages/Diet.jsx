@@ -1,5 +1,6 @@
 // frontend/src/pages/Diet.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import API from "../api.js";
 import {
   PieChart, Pie, Cell, Tooltip,
   ResponsiveContainer, RadialBarChart, RadialBar,
@@ -248,8 +249,72 @@ const Diet = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("meals");
 
+  useEffect(() => {
+    const fetchSavedMetrics = async () => {
+      try {
+        const { data } = await API.get("/diet/metrics");
+        if (data) {
+          setMetrics({
+            age: data.age || "",
+            gender: data.gender || "male",
+            heightCm: data.heightCm || "",
+            weightKg: data.weightKg || "",
+            activityLevel: data.activityLevel || "moderate",
+            goal: data.goal || "maintain",
+          });
+          
+          // Auto generate the plan
+          const bmr = calcBMR({
+            gender: data.gender || "male",
+            weightKg: +(data.weightKg || 70),
+            heightCm: +(data.heightCm || 170),
+            age: +(data.age || 25),
+          });
+
+          let tdee = bmr * ACTIVITY_MULTIPLIERS[data.activityLevel || "moderate"];
+          if (data.goal === "lose")    tdee *= 0.80;
+          if (data.goal === "gain")    tdee *= 1.15;
+
+          const calories = Math.round(tdee);
+          const protein  = Math.round((0.30 * calories) / 4);
+          const fats     = Math.round((0.25 * calories) / 9);
+          const carbs    = Math.round((calories - protein * 4 - fats * 9) / 4);
+
+          setPlan({
+            bmr: Math.round(bmr),
+            calories,
+            macros: { protein, fats, carbs },
+            meals: MEAL_PLANS[data.goal || "maintain"],
+            bmi: (+(data.weightKg || 70) / Math.pow(+(data.heightCm || 170) / 100, 2)).toFixed(1),
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching metrics in Diet:", err);
+      }
+    };
+    fetchSavedMetrics();
+  }, []);
+
   const onChange = (e) =>
     setMetrics((m) => ({ ...m, [e.target.name]: e.target.value }));
+
+  const logMeal = async (meal) => {
+    try {
+      const scaledCalories = Math.round(meal.calories * (plan?.calories ? plan.calories / 1520 : 1));
+      await API.post("/progress/meal", {
+        mealType: meal.name.toLowerCase().includes("snack") ? "snack" : meal.name.toLowerCase(),
+        foodName: meal.items.join(", "),
+        calories: scaledCalories,
+        protein: Math.round((plan?.macros?.protein || 100) / 4),
+        carbs: Math.round((plan?.macros?.carbs || 200) / 4),
+        fats: Math.round((plan?.macros?.fats || 50) / 4),
+      });
+      alert(`🍽️ ${meal.name} logged successfully to MongoDB!`);
+    } catch (err) {
+      console.error("Error logging meal:", err);
+      alert("Failed to log meal.");
+    }
+  };
 
   const validate = () => {
     if (!metrics.age || !metrics.heightCm || !metrics.weightKg) {
@@ -332,38 +397,85 @@ const Diet = () => {
       fontFamily: "'DM Sans', system-ui, sans-serif",
       color: "#f1f5f9",
     }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&display=swap');
+        @keyframes dietFadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes dietShimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+        @keyframes dietFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        @keyframes dietGlow{0%,100%{box-shadow:0 0 0 0 rgba(34,211,238,0.4)}50%{box-shadow:0 0 0 12px rgba(34,211,238,0)}}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes growBar{from{width:0}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+      `}</style>
 
-      {/* ── Page Header ── */}
-      <div style={{ textAlign: "center", marginBottom: 48 }}>
-        <div style={{
-          display: "inline-flex", alignItems: "center", gap: 8,
-          padding: "6px 16px", borderRadius: 999,
-          background: "rgba(34,211,238,0.08)",
-          border: "1px solid rgba(34,211,238,0.2)",
-          fontSize: 12, fontWeight: 700, color: "#22d3ee",
-          letterSpacing: "0.12em", textTransform: "uppercase",
-          marginBottom: 16,
-        }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22d3ee", display: "inline-block", boxShadow: "0 0 8px #22d3ee" }} />
-          AI Nutrition Engine
-        </div>
-        <h1 style={{
-          fontSize: "clamp(32px, 5vw, 52px)",
-          fontWeight: 900, margin: "0 0 12px",
-          lineHeight: 1.1, letterSpacing: "-0.02em",
-        }}>
-          Your{" "}
-          <span style={{
-            background: "linear-gradient(135deg, #22d3ee, #3b82f6)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+      {/* ── Hero Banner ── */}
+      <div style={{
+        position: "relative", borderRadius: 28, overflow: "hidden",
+        background: "linear-gradient(135deg, #020c1b 0%, #041225 40%, #050d1f 100%)",
+        padding: "52px 48px", marginBottom: 44,
+        border: "1px solid rgba(34,211,238,0.12)",
+        boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
+      }}>
+        {/* Blobs */}
+        <div style={{ position:"absolute", top:"-15%", right:"-5%", width:"45%", height:"170%",
+          background:"radial-gradient(ellipse, rgba(34,211,238,0.18) 0%, transparent 65%)",
+          pointerEvents:"none", animation:"dietFloat 7s ease-in-out infinite" }} />
+        <div style={{ position:"absolute", bottom:"-25%", left:"-5%", width:"40%", height:"150%",
+          background:"radial-gradient(ellipse, rgba(59,130,246,0.15) 0%, transparent 65%)",
+          pointerEvents:"none", animation:"dietFloat 9s ease-in-out infinite reverse" }} />
+
+        <div style={{ position:"relative", zIndex:2, textAlign:"center" }}>
+          <div style={{
+            display:"inline-flex", alignItems:"center", gap:8,
+            padding:"5px 16px", borderRadius:999,
+            background:"rgba(34,211,238,0.1)", border:"1px solid rgba(34,211,238,0.3)",
+            fontSize:11, fontWeight:700, color:"#22d3ee", letterSpacing:"0.12em",
+            marginBottom:20, animation:"dietFadeUp 0.6s ease both",
           }}>
-            Personalized
-          </span>{" "}
-          Diet Plan
-        </h1>
-        <p style={{ fontSize: 16, color: "#64748b", margin: 0 }}>
-          Enter your body metrics and we'll calculate your exact macros, calories, and meal plan
-        </p>
+            <span style={{ width:6, height:6, borderRadius:"50%", background:"#22d3ee",
+              display:"inline-block", boxShadow:"0 0 8px #22d3ee", animation:"dietGlow 2s infinite" }} />
+            AI NUTRITION ENGINE
+          </div>
+
+          <h1 style={{
+            fontFamily:"'Syne',sans-serif",
+            fontSize:"clamp(30px,5vw,52px)", fontWeight:900,
+            margin:"0 0 16px", lineHeight:1.1, letterSpacing:"-0.02em",
+            animation:"dietFadeUp 0.7s ease 0.1s both",
+          }}>
+            Your{" "}
+            <span style={{
+              background:"linear-gradient(135deg,#22d3ee 0%,#3b82f6 50%,#a78bfa 100%)",
+              backgroundSize:"200% auto",
+              WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
+              animation:"dietShimmer 4s linear infinite",
+            }}>Personalized</span>{" "}
+            Diet Plan
+          </h1>
+
+          <p style={{ fontSize:16, color:"#64748b", margin:"0 0 28px", animation:"dietFadeUp 0.7s ease 0.2s both" }}>
+            Enter your body metrics — we'll calculate exact macros, calories & a full Indian meal plan
+          </p>
+
+          <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", animation:"dietFadeUp 0.7s ease 0.3s both" }}>
+            {[
+              { icon:"🧬", text:"BMR Calculation",  color:"#22d3ee" },
+              { icon:"🥗", text:"Indian Meal Plans", color:"#22c55e" },
+              { icon:"📊", text:"Macro Breakdown",   color:"#a78bfa" },
+              { icon:"💧", text:"Hydration Guide",   color:"#3b82f6" },
+            ].map(chip => (
+              <div key={chip.text} style={{
+                display:"inline-flex", alignItems:"center", gap:6,
+                padding:"8px 16px", borderRadius:999,
+                background:`${chip.color}18`,
+                border:`1px solid ${chip.color}40`,
+                fontSize:13, fontWeight:600, color:chip.color,
+              }}>
+                <span>{chip.icon}</span><span>{chip.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* ── Form Card ── */}
@@ -615,7 +727,7 @@ const Diet = () => {
                   </div>
 
                   {/* Calories */}
-                  <div style={{ textAlign: "right", minWidth: 80 }}>
+                  <div style={{ textAlign: "right", minWidth: 100 }}>
                     <div style={{
                       fontSize: 28, fontWeight: 900, color: meal.color,
                       lineHeight: 1,
@@ -625,6 +737,33 @@ const Diet = () => {
                     <div style={{ fontSize: 11, color: "#475569", fontWeight: 600, marginTop: 2 }}>
                       kcal
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => logMeal(meal)}
+                      style={{
+                        marginTop: 10,
+                        padding: "6px 12px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: `${meal.color}20`,
+                        color: meal.color,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        border: `1px solid ${meal.color}35`,
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = meal.color;
+                        e.currentTarget.style.color = "#000";
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = `${meal.color}20`;
+                        e.currentTarget.style.color = meal.color;
+                      }}
+                    >
+                      ➕ Log Meal
+                    </button>
                   </div>
                 </div>
               ))}

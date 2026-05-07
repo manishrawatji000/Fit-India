@@ -22,9 +22,18 @@ function activityMultiplier(level) {
   }
 }
 
+router.get("/metrics", protect, async (req, res) => {
+  try {
+    const metrics = await BodyMetrics.findOne({ user: req.user._id });
+    res.json(metrics || null);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 router.post("/save-metrics", protect, async (req, res) => {
   try {
-    const { age, gender, heightCm, weightKg, activityLevel, goal } = req.body;
+    const { age, gender, heightCm, weightKg, activityLevel, goal, location, fitnessLevel } = req.body;
     let metrics = await BodyMetrics.findOne({ user: req.user._id });
 
     if (!metrics) {
@@ -36,9 +45,11 @@ router.post("/save-metrics", protect, async (req, res) => {
         weightKg,
         activityLevel,
         goal,
+        location,
+        fitnessLevel
       });
     } else {
-      Object.assign(metrics, { age, gender, heightCm, weightKg, activityLevel, goal });
+      Object.assign(metrics, { age, gender, heightCm, weightKg, activityLevel, goal, location, fitnessLevel });
       await metrics.save();
     }
 

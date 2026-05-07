@@ -9,6 +9,9 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Workout from "./pages/Workout.jsx";
 import Diet from "./pages/Diet.jsx";
 import Progress from "./pages/Progress.jsx";
+import AICoach from "./pages/AICoach.jsx";
+import Profile from "./pages/Profile.jsx";
+import ElitePerformance from "./pages/ElitePerformance.jsx";
 import Navbar from "./components/Navbar.jsx";
 
 // ── Spinner shown while Clerk initialises ────────────────────────────────────
@@ -44,9 +47,10 @@ const PublicOnlyRoute = ({ children }) => {
 const AppLayout = ({ children }) => (
   <>
     <Navbar />
-    <main style={{ paddingTop: 64 }}>{children}</main>
+    <main style={{ paddingTop: 62, minHeight: "100vh" }}>{children}</main>
   </>
 );
+
 
 // ── App ──────────────────────────────────────────────────────────────────────
 const App = () => (
@@ -67,6 +71,9 @@ const App = () => (
     <Route path="/workout"   element={<PrivateRoute><AppLayout><Workout /></AppLayout></PrivateRoute>} />
     <Route path="/diet"      element={<PrivateRoute><AppLayout><Diet /></AppLayout></PrivateRoute>} />
     <Route path="/progress"  element={<PrivateRoute><AppLayout><Progress /></AppLayout></PrivateRoute>} />
+    <Route path="/ai-coach"  element={<PrivateRoute><AppLayout><AICoach /></AppLayout></PrivateRoute>} />
+    <Route path="/elite"     element={<PrivateRoute><AppLayout><ElitePerformance /></AppLayout></PrivateRoute>} />
+    <Route path="/profile"   element={<PrivateRoute><AppLayout><Profile /></AppLayout></PrivateRoute>} />
 
     {/* Fallback */}
     <Route path="*" element={<Navigate to="/" replace />} />

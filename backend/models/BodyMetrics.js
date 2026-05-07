@@ -16,6 +16,8 @@ const bodyMetricsSchema = new mongoose.Schema(
       enum: ["lose", "maintain", "gain"],
       default: "maintain",
     },
+    location: { type: String, default: "Mumbai, India" },
+    fitnessLevel: { type: String, default: "Intermediate" },
   },
   { timestamps: true }
 );

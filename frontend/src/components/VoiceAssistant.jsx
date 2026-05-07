@@ -70,7 +70,7 @@ const VoiceAssistant = ({ workoutContext = null }) => {
 
   // ── Auto scroll to latest message ─────────────────────────────────────────
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [messages]);
 
   // ── Toggle mic ────────────────────────────────────────────────────────────
@@ -163,7 +163,8 @@ const VoiceAssistant = ({ workoutContext = null }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/chat', {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const response = await fetch(`${apiUrl}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
