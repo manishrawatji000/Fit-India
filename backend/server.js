@@ -17,6 +17,7 @@ app.use("/api/auth",     require("./routes/authRoutes"));
 app.use("/api/diet",     require("./routes/dietRoutes"));
 app.use("/api/progress", require("./routes/progressRoutes"));
 app.use("/api/chat",     require("./routes/chatRoutes")); // ✅ Gemini chat route
+app.use("/api/payment",  require("./routes/paymentRoutes")); // ✅ Razorpay routes
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: false },
+    tier: { type: String, enum: ["Basic", "Pro", "Elite"], default: "Basic" },
   },
   { timestamps: true }
 );

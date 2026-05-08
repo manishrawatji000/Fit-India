@@ -41,7 +41,7 @@ export const exercises = [
     targetMuscles: 'Inner Chest, Triceps',
     description: 'Close-grip diamond-hand push-up for triceps and inner chest.',
     keyPoints: ['Thumbs and index fingers touch', 'Elbows close to body', 'Full depth', 'Core tight'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.35,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.35, isPro: true,
   },
   {
     id: 'pike-push-ups', name: 'Pike Push-ups', category: 'chest', icon: '🔺', level: 'Intermediate',
@@ -49,7 +49,7 @@ export const exercises = [
     targetMuscles: 'Shoulders, Upper Chest',
     description: 'Downward-dog push-up hitting shoulders and upper chest.',
     keyPoints: ['Hips high', 'Lower head to floor', 'Push back up fully', 'Elbows back not out'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.40,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.40, isPro: true,
   },
   {
     id: 'decline-push-ups', name: 'Decline Push-ups', category: 'chest', icon: '📐', level: 'Intermediate',
@@ -57,7 +57,7 @@ export const exercises = [
     targetMuscles: 'Upper Chest, Front Deltoids',
     description: 'Feet-elevated push-up targeting upper chest.',
     keyPoints: ['Feet elevated', 'Straight body line', 'Lower chest to floor', 'Explosive press up'],
-    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.38,
+    angleType: 'elbow', downThreshold: 100, upThreshold: 155, caloriesPerRep: 0.38, isPro: true,
   },
 
   // ── LEGS ───────────────────────────────────────────────
@@ -75,7 +75,7 @@ export const exercises = [
     targetMuscles: 'Inner Thighs, Glutes, Quads',
     description: 'Wide-stance squat emphasising inner thighs and glutes.',
     keyPoints: ['Feet wide, toes out 45°', 'Knees track toes', 'Deep squat', 'Keep back upright'],
-    angleType: 'knee', downThreshold: 105, upThreshold: 160, caloriesPerRep: 0.45,
+    angleType: 'knee', downThreshold: 105, upThreshold: 160, caloriesPerRep: 0.45, isPro: true,
   },
   {
     id: 'lunges', name: 'Lunges', category: 'legs', icon: '🚶', level: 'Beginner',
@@ -91,7 +91,7 @@ export const exercises = [
     targetMuscles: 'Quads, Calves, Glutes',
     description: 'Explosive plyometric squat for power development.',
     keyPoints: ['Squat to parallel', 'Explode upward', 'Land softly, knees bent', 'Immediate re-squat'],
-    angleType: 'knee', downThreshold: 105, upThreshold: 160, caloriesPerRep: 0.65,
+    angleType: 'knee', downThreshold: 105, upThreshold: 160, caloriesPerRep: 0.65, isPro: true,
   },
   {
     id: 'glute-bridge', name: 'Glute Bridge', category: 'legs', icon: '🌉', level: 'Beginner',

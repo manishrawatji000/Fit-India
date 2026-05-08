@@ -1,5 +1,6 @@
 // frontend/src/pages/Workout.jsx
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-backend-webgl";
 import * as poseDetection from "@tensorflow-models/pose-detection";
@@ -158,6 +159,8 @@ const ExerciseSelection = ({ onSelectExercise }) => {
   const [metrics, setMetrics] = useState({ goal: "maintain", weightKg: 70 });
   const [weeklyPlan, setWeeklyPlan] = useState([]);
   const [loadingPlan, setLoadingPlan] = useState(true);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const navigate = useNavigate();
   
   const daysOfWeekNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const currentDayIndex = new Date().getDay();
@@ -267,6 +270,7 @@ const ExerciseSelection = ({ onSelectExercise }) => {
     : exercises.filter(e => e.category === activeCategory);
 
   const selectedDayPlan = weeklyPlan.find(item => item.day === selectedDay);
+  const userTier = localStorage.getItem("fitindia_tier") || "Basic";
 
   return (
     <div style={{ fontFamily:"'DM Sans',sans-serif" }}>
@@ -468,15 +472,36 @@ const ExerciseSelection = ({ onSelectExercise }) => {
 
       {/* Exercise Grid */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:18,marginBottom:100}}>
-        {filtered.map((ex,i)=>(
-          <div key={ex.id} onClick={()=>setSelected(ex)}
+        {filtered.map((ex,i)=>{
+          const isLocked = ex.isPro && userTier === "Basic";
+          return (
+          <div key={ex.id} onClick={() => {
+              if (isLocked) {
+                setShowUpgradeModal(true);
+                return;
+              }
+              setSelected(ex);
+            }}
             style={{background:selected?.id===ex.id?`${ex.color}12`:'rgba(15,23,42,0.75)',
-              backdropFilter:'blur(20px)',borderRadius:20,padding:22,cursor:'pointer',
+              backdropFilter:'blur(20px)',borderRadius:20,padding:22,cursor:isLocked ? 'not-allowed' : 'pointer',
               border:selected?.id===ex.id?`2px solid ${ex.color}80`:'1px solid rgba(148,163,184,0.12)',
               boxShadow:selected?.id===ex.id?`0 16px 48px ${ex.color}30`:'0 4px 20px rgba(0,0,0,0.3)',
               transition:'all 0.28s ease',animation:`wFadeUp 0.5s ease ${i*0.04}s both`,position:'relative',overflow:'hidden'}}
-            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-4px)';e.currentTarget.style.boxShadow=`0 20px 50px ${ex.color}35`}}
-            onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow=selected?.id===ex.id?`0 16px 48px ${ex.color}30`:'0 4px 20px rgba(0,0,0,0.3)'}}>
+            onMouseEnter={e=>{if(!isLocked){e.currentTarget.style.transform='translateY(-4px)';e.currentTarget.style.boxShadow=`0 20px 50px ${ex.color}35`}}}
+            onMouseLeave={e=>{if(!isLocked){e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow=selected?.id===ex.id?`0 16px 48px ${ex.color}30`:'0 4px 20px rgba(0,0,0,0.3)'}}}>
+            
+            {isLocked && (
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(5px)', zIndex: 10,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <div style={{ fontSize: 40, marginBottom: 8, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))' }}>🔒</div>
+                <div style={{ color: '#fbbf24', fontWeight: 800, fontSize: 16, textTransform: 'uppercase', letterSpacing: 1 }}>Pro Exclusive</div>
+                <div style={{ color: '#f1f5f9', fontSize: 12, marginTop: 4, fontWeight: 600 }}>Click to Unlock</div>
+              </div>
+            )}
+
             <div style={{position:'absolute',top:0,right:0,width:'55%',height:'100%',
               background:ex.gradient,opacity:0.07,filter:'blur(30px)',pointerEvents:'none',borderRadius:'50%'}}/>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:14}}>
@@ -514,7 +539,7 @@ const ExerciseSelection = ({ onSelectExercise }) => {
               ))}
             </div>
           </div>
-        ))}
+        )})}
       </div>
 
       {/* Floating Start Button */}
@@ -529,6 +554,44 @@ const ExerciseSelection = ({ onSelectExercise }) => {
             <span style={{fontSize:22}}>{selected.icon}</span>
             Start {selected.name} 
           </button>
+        </div>
+      )}
+
+      {/* Upgrade Pro Modal */}
+      {showUpgradeModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999,
+          animation: 'wFadeUp 0.3s ease both'
+        }}>
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(141, 198, 63, 0.3)',
+            padding: '40px', borderRadius: '24px', textAlign: 'center', maxWidth: '400px',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.5)', position: 'relative'
+          }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+            <h2 style={{ fontSize: 24, fontWeight: 900, color: 'white', margin: '0 0 12px' }}>Pro Feature Locked</h2>
+            <p style={{ color: '#94a3b8', fontSize: 15, marginBottom: 28, lineHeight: 1.5 }}>
+              This advanced AI tracking exercise is exclusive to Pro and Elite members. Upgrade now to unlock your full potential!
+            </p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+              <button onClick={() => setShowUpgradeModal(false)}
+                style={{ padding: '12px 24px', borderRadius: '12px', background: 'transparent', color: '#94a3b8', border: '1px solid #334155', cursor: 'pointer', fontWeight: 700, transition: 'all 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                Maybe Later
+              </button>
+              <button onClick={() => navigate("/")}
+                style={{ padding: '12px 24px', borderRadius: '12px', background: 'linear-gradient(135deg, #8DC63F, #22c55e)', color: '#020617', border: 'none', cursor: 'pointer', fontWeight: 800, boxShadow: '0 4px 14px rgba(141,198,63,0.3)', transition: 'all 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                View Plans
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

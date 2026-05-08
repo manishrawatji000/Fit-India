@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth, UserButton } from "@clerk/clerk-react";
+import API from "../api";
 
 /* ── Animated counter ── */
 const Counter = ({ end, suffix = "" }) => {
@@ -117,7 +118,7 @@ const WhyCard = ({ icon, title, desc, delay }) => {
 };
 
 /* ── Pricing card ── */
-const PricingCard = ({ plan, price, period, desc, features, cta, highlight, badge, delay }) => {
+const PricingCard = ({ plan, price, period, desc, features, cta, highlight, badge, delay, onSelectPlan }) => {
   const [hov, setHov] = useState(false);
   return (
     <div
@@ -202,7 +203,7 @@ const PricingCard = ({ plan, price, period, desc, features, cta, highlight, badg
         cursor: "pointer",
         transition: "all 0.25s ease",
         letterSpacing: "0.02em",
-      }}>{cta}</button>
+      }} onClick={() => onSelectPlan && onSelectPlan(plan)}>{cta}</button>
     </div>
   );
 };
@@ -212,7 +213,7 @@ const PricingCard = ({ plan, price, period, desc, features, cta, highlight, badg
 ═══════════════════════════════════════ */
 const Home = () => {
   const navigate = useNavigate();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [activeFeature, setActiveFeature] = useState(null);
@@ -222,6 +223,70 @@ const Home = () => {
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
+
+  const handleUpgrade = async (plan) => {
+    if (!isSignedIn) {
+      navigate("/sign-in");
+      return;
+    }
+    if (plan === "Basic") return;
+
+    try {
+      const res = await new Promise((resolve) => {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+      });
+
+      if (!res) {
+        alert("Razorpay SDK failed to load. Please check your internet connection.");
+        return;
+      }
+
+      // Create exact order on the backend to prevent users changing the amount
+      const { data: order } = await API.post("/payment/create-order", { plan });
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_placeholder",
+        amount: order.amount, // Locked to exactly ₹799 or ₹1499
+        currency: "INR",
+        name: "FitIndia.ai",
+        description: `Upgrade to ${plan} Plan`,
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            const verifyRes = await API.post("/payment/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              plan
+            });
+            localStorage.setItem("fitindia_tier", verifyRes.data.tier);
+            alert(`🎉 Success! Payment verified. You are now a ${verifyRes.data.tier} member!`);
+            navigate("/dashboard"); // Automatic redirect!
+          } catch (err) {
+            alert("Payment verification failed. If money was deducted, please contact support.");
+          }
+        },
+        prefill: {
+          name: user?.fullName || "FitIndia User",
+          email: user?.primaryEmailAddress?.emailAddress || "",
+        },
+        theme: { color: "#8DC63F" }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response){
+        alert("Payment failed or cancelled! Reason: " + response.error.description);
+      });
+      rzp1.open();
+    } catch (err) {
+      console.error(err);
+      alert("Error initiating secure payment. Make sure backend is running.");
+    }
+  };
 
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -980,7 +1045,8 @@ const Home = () => {
               "Clean Dashboard",
               "Email Support",
             ]}
-            cta="Get Started"
+            cta="Current Plan"
+            onSelectPlan={handleUpgrade}
           />
           <PricingCard
             delay={100}
@@ -1000,6 +1066,7 @@ const Home = () => {
               "Priority Chat Support",
             ]}
             cta="Get Started"
+            onSelectPlan={handleUpgrade}
           />
           <PricingCard
             delay={200}
@@ -1020,6 +1087,7 @@ const Home = () => {
               "24/7 Priority Support",
             ]}
             cta="Get Started"
+            onSelectPlan={handleUpgrade}
           />
         </div>
 
